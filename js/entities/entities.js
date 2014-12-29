@@ -61,11 +61,14 @@ game.PlayerEntity = me.Entity.extend({
 				// set current vel to the maximum defined value
 				// gravity will then do the rest
 				this.body.vel.y = -this.body.maxVel.y * me.timer.tick;
-				// set the jumping flag
 				this.body.jumping = true;
 			}
 
 		}		
+		
+		if (this.body.vel.y > 0) {
+			this.body.falling = true;
+		}
 		
         // apply physics to the body (this moves the entity)
         this.body.update(dt);
@@ -104,12 +107,10 @@ game.PlayerEntity = me.Entity.extend({
 			case me.collision.types.ENEMY_OBJECT:
 				if ((response.overlapV.y>0) && !this.body.jumping) {
 					// bounce (force jump)
-					this.body.falling = false;
 					this.body.vel.y = -this.body.maxVel.y * me.timer.tick;
-					// set the jumping flag
 					this.body.jumping = true;
 				}
-				else {
+				else if (!this.body.jumping) {
 					// let's flicker in case we touched an enemy
 					this.renderable.flicker(750);
 				}
@@ -225,8 +226,12 @@ game.EnemyEntity = me.Entity.extend({
     if (response.b.body.collisionType !== me.collision.types.WORLD_SHAPE) {
       // res.y >0 means touched by something on the bottom
       // which mean at top position for this one
-      if (this.alive && (response.overlapV.y > 0) && response.a.body.falling) {
-        this.renderable.flicker(750);
+      if (this.alive && (response.overlapV.y > 0) && other.body.falling) {
+        this.renderable.flicker(700, function() {
+			me.game.world.removeChild(this);
+		}.bind(this));
+		this.body.vel.x = 0;
+		this.alive = false;
       }
       return false;
     }
