@@ -7,8 +7,15 @@ game.PlayerEntity = me.Entity.extend({
      * constructor
      */
     init:function (x, y, settings) {
+		// define this here instead of tiled
+		settings.image = "soldier";
+		settings.spritewidth = 64;
+		settings.spriteheight = 64;
+	
         // call the constructor
         this._super(me.Entity, 'init', [x, y , settings]);
+		
+		this.anchorPoint.set(0.5, 1);
 		
 		// set the default horizontal and vertical speed (accel vector)
 		this.body.setVelocity(3, 3);
@@ -20,13 +27,15 @@ game.PlayerEntity = me.Entity.extend({
 		this.alwaysUpdate = true;
 		
 		this.renderable.addAnimation("walkUp", [0, 1, 2, 3, 4, 5, 6, 7, 8]);
-		this.renderable.addAnimation("walkLeft", [9, 10, 11, 12, 13, 14, 15, 16]);
-		this.renderable.addAnimation("walkDown", [17, 18, 19, 20, 21, 22, 23, 24]);
-		this.renderable.addAnimation("walkRight", [25, 26, 27, 28, 29, 30, 31, 32]);
-		// define a standing animation (using the first frame)
-		this.renderable.addAnimation("stand", [0]);
-		// set the standing animation as default
-		this.renderable.setCurrentAnimation("stand");
+		this.renderable.addAnimation("walkLeft", [9, 10, 11, 12, 13, 14, 15, 16, 17]);
+		this.renderable.addAnimation("walkDown", [18, 19, 20, 21, 22, 23, 24, 25, 26]);
+		this.renderable.addAnimation("walkRight", [27, 28, 29, 30, 31, 32, 33, 34, 35]);
+		
+		this.renderable.addAnimation("standUp", [0]);
+		this.renderable.addAnimation("standLeft", [9]);
+		this.renderable.addAnimation("standDown", [18]);
+		this.renderable.addAnimation("standRight", [27]);
+		this.renderable.setCurrentAnimation("standDown");
     },
 
     /**
@@ -66,7 +75,15 @@ game.PlayerEntity = me.Entity.extend({
 		}
 		
 		if (this.body.vel.x == 0 && this.body.vel.y == 0) {
-			this.renderable.setCurrentAnimation("stand");
+			if (this.renderable.isCurrentAnimation("walkUp")) {
+				this.renderable.setCurrentAnimation("standUp");
+			} else if (this.renderable.isCurrentAnimation("walkLeft")) {
+				this.renderable.setCurrentAnimation("standLeft");
+			} else if (this.renderable.isCurrentAnimation("walkDown")) {
+				this.renderable.setCurrentAnimation("standDown");
+			} else if (this.renderable.isCurrentAnimation("walkRight")) {
+				this.renderable.setCurrentAnimation("standRight");
+			}
 		}
 
 		/*if (me.input.isKeyPressed('jump')) {
@@ -136,6 +153,8 @@ game.CoinEntity = me.CollectableEntity.extend({
 	// extending the init function is not mandatory
 	// unless you need to add some extra initialization
 	init: function(x, y, settings) {
+		settings.image = "spinning_coin_gold";
+		
 		// call the parent constructor
 		this._super(me.CollectableEntity, 'init', [x, y , settings]);
 

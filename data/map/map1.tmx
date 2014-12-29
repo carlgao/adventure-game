@@ -46,14 +46,10 @@
   <object x="273" y="2">
    <polyline points="0,0 5,9 216,14 230,42 282,52 290,103 349,118 351,195 367,210"/>
   </object>
+  <object x="288" y="256" width="32" height="32"/>
  </objectgroup>
  <objectgroup name="entities">
-  <object name="mainPlayer" x="0" y="0" width="64" height="64">
-   <properties>
-    <property name="image" value="male_walkcycle"/>
-    <property name="spritewidth" value="64"/>
-   </properties>
-  </object>
+  <object name="mainPlayer" x="0" y="32" width="32" height="32"/>
   <object name="enemyEntity" x="352" y="160" width="192" height="32"/>
   <object name="coinEntity" x="352" y="224" width="32" height="32"/>
   <object x="507" y="556"/>

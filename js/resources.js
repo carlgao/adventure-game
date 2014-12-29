@@ -12,7 +12,7 @@ game.resources = [
 	{name: "watergrass", type: "image", src: "data/img/map/watergrass.png"},
 	
 	// main player spritesheet
-	{name: "male_walkcycle", type:"image", src: "data/img/sprite/people/male_walkcycle.png"},
+	{name: "soldier", type:"image", src: "data/img/sprite/people/soldier.png"},
 	
 	// the spinning coin spritesheet
 	{name: "spinning_coin_gold",  type:"image", src: "data/img/sprite/spinning_coin_gold.png"},
