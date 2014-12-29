@@ -11,7 +11,7 @@ game.PlayerEntity = me.Entity.extend({
         this._super(me.Entity, 'init', [x, y , settings]);
 		
 		// set the default horizontal and vertical speed (accel vector)
-		this.body.setVelocity(3, 15);
+		this.body.setVelocity(3, 3);
 		
 		// set the display to follow our position on both axes
 		me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
@@ -19,8 +19,10 @@ game.PlayerEntity = me.Entity.extend({
 		// ensure the player is updated even when outside of the viewport
 		this.alwaysUpdate = true;
 		
-		// define a basic walking animation (using all frames)
-		this.renderable.addAnimation("walk", [0, 1, 2, 3, 4, 5, 6, 7]);
+		this.renderable.addAnimation("walkUp", [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+		this.renderable.addAnimation("walkLeft", [9, 10, 11, 12, 13, 14, 15, 16]);
+		this.renderable.addAnimation("walkDown", [17, 18, 19, 20, 21, 22, 23, 24]);
+		this.renderable.addAnimation("walkRight", [25, 26, 27, 28, 29, 30, 31, 32]);
 		// define a standing animation (using the first frame)
 		this.renderable.addAnimation("stand", [0]);
 		// set the standing animation as default
@@ -32,30 +34,42 @@ game.PlayerEntity = me.Entity.extend({
      */
 	update : function (dt) {
 		if (me.input.isKeyPressed('left')) {
-			// flip the sprite on horizontal axis
-			this.renderable.flipX(true);
-			// update the entity velocity
 			this.body.vel.x -= this.body.accel.x * me.timer.tick;
 			// change to the walking animation
-			if (!this.renderable.isCurrentAnimation("walk")) {
-				this.renderable.setCurrentAnimation("walk");
+			if (!this.renderable.isCurrentAnimation("walkLeft")) {
+				this.renderable.setCurrentAnimation("walkLeft");
 			}
 		} else if (me.input.isKeyPressed('right')) {
-			// unflip the sprite
-			this.renderable.flipX(false);
-			// update the entity velocity
 			this.body.vel.x += this.body.accel.x * me.timer.tick;
 			// change to the walking animation
-			if (!this.renderable.isCurrentAnimation("walk")) {
-				this.renderable.setCurrentAnimation("walk");
+			if (!this.renderable.isCurrentAnimation("walkRight")) {
+				this.renderable.setCurrentAnimation("walkRight");
 			}
 		} else {
 			this.body.vel.x = 0;
-			// change to the standing animation
+		}
+		
+		if (me.input.isKeyPressed('down')) {
+			this.body.vel.y += this.body.accel.y * me.timer.tick;
+			// change to the walking animation
+			if (this.body.vel.x == 0 && !this.renderable.isCurrentAnimation("walkDown")) {
+				this.renderable.setCurrentAnimation("walkDown");
+			}
+		} else if (me.input.isKeyPressed('up')) {
+			this.body.vel.y -= this.body.accel.y * me.timer.tick;
+			// change to the walking animation
+			if (this.body.vel.x == 0 && !this.renderable.isCurrentAnimation("walkUp")) {
+				this.renderable.setCurrentAnimation("walkUp");
+			}
+		} else {
+			this.body.vel.y = 0;
+		}
+		
+		if (this.body.vel.x == 0 && this.body.vel.y == 0) {
 			this.renderable.setCurrentAnimation("stand");
 		}
 
-		if (me.input.isKeyPressed('jump')) {
+		/*if (me.input.isKeyPressed('jump')) {
 			// make sure we are not already jumping or falling
 			if (!this.body.jumping && !this.body.falling) {
 				// set current vel to the maximum defined value
@@ -63,12 +77,7 @@ game.PlayerEntity = me.Entity.extend({
 				this.body.vel.y = -this.body.maxVel.y * me.timer.tick;
 				this.body.jumping = true;
 			}
-
-		}		
-		
-		if (this.body.vel.y > 0) {
-			this.body.falling = true;
-		}
+		}*/
 		
         // apply physics to the body (this moves the entity)
         this.body.update(dt);
@@ -105,15 +114,8 @@ game.PlayerEntity = me.Entity.extend({
 				break;
 
 			case me.collision.types.ENEMY_OBJECT:
-				if ((response.overlapV.y>0) && !this.body.jumping) {
-					// bounce (force jump)
-					this.body.vel.y = -this.body.maxVel.y * me.timer.tick;
-					this.body.jumping = true;
-				}
-				else if (!this.body.jumping) {
-					// let's flicker in case we touched an enemy
-					this.renderable.flicker(750);
-				}
+				// let's flicker in case we touched an enemy
+				this.renderable.flicker(750);
 				return false;
 				break;
 
